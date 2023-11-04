@@ -2,6 +2,23 @@ from pydantic import BaseModel, UUID4, Field
 from datetime import date
 
 
+class BaseUser(BaseModel):
+    name: str
+    surname: str
+    phone_number: str
+    email: str
+
+
+class BasePassport(BaseModel):
+    passport_number: str
+    nationality: str
+    sex: str
+    address: str
+    date_of_birth: date
+    date_of_issue: date
+    date_of_expire: date
+
+
 class Aircraft(BaseModel):
     name: str
     model: str
@@ -34,30 +51,34 @@ class Ticket(BaseModel):
     booking_date: str
 
 
-class Passport(BaseModel):
-    passport_number: str
-    nationality: str
-    sex: str
-    address: str
-    date_of_birth: str
-    date_of_issue: str
-    date_of_expire: str
-    photo: bytes
+class CreatePassport(BasePassport):
+    passport_number: str = None
+    nationality: str = None
+    sex: str = None
+    address: str = None
+    date_of_birth: date = None
+    date_of_issue: date = None
+    date_of_expire: date = None
+    photo: bytes = None
 
 
-class User(BaseModel):
+class User(BaseUser):
     username: str
-    name: str
-    surname: str
-    phone_number: str
-    email: str
     password: str
 
 
-class UserResponse(BaseModel):
+class UserID(BaseUser):
+    id: UUID4
+
+
+class UserResponse(BaseUser):
     username: str
-    name: str
-    surname: str
-    phone_number: str
-    email: str
+
+
+class UserPatch(BaseUser):
+    name: str = None
+    surname: str = None
+    phone_number: str = None
+    email: str = None
+
 
