@@ -82,3 +82,11 @@ class UserPatch(BaseUser):
     email: str = None
 
 
+class BaseDepartment(BaseModel):
+    name: str
+    description: str
+
+
+class Department(BaseDepartment):
+    name: str = None
+    description: str = None
