@@ -1,3 +1,5 @@
+import decimal
+
 from pydantic import BaseModel, UUID4, Field
 from datetime import date
 
@@ -17,6 +19,20 @@ class BasePassport(BaseModel):
     date_of_birth: date
     date_of_issue: date
     date_of_expire: date
+
+
+class BaseEmployee(BaseModel):
+    position: str
+    salary: decimal.Decimal
+    department_id: UUID4 = None
+    user_id: UUID4 = None
+    status: str
+
+
+class CreateEmployee(BaseModel):
+    position: str
+    salary: decimal.Decimal
+    status: str
 
 
 class Aircraft(BaseModel):
@@ -90,3 +106,19 @@ class BaseDepartment(BaseModel):
 class Department(BaseDepartment):
     name: str = None
     description: str = None
+
+
+class BaseDepartmentID(BaseDepartment):
+    id: UUID4
+
+
+class EmployeeDetails(BaseEmployee):
+    department_id: str
+    user_id: str
+
+
+class PatchEmployee(BaseModel):
+    position: str = None
+    salary: decimal.Decimal = None
+    status: str = None
+    department_name: str = None

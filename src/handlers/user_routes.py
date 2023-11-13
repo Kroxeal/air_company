@@ -6,7 +6,7 @@ from src.services.CRUD.Users_crud import create_user, get_user, update_user, upd
 router = APIRouter()
 
 
-#, current_user: User = Depends(get_current_user)
+# current_user: User = Depends(get_current_user)
 @router.post("/", response_model=User)
 async def create_user_endpoint(user: User):
     try:

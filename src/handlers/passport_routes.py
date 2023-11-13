@@ -44,17 +44,12 @@ async def get_current_passport(current_user: User = Depends(get_current_user)):
 @router.put("/", response_model=CreatePassport)
 async def change_all_current_passport(passport: CreatePassport, current_user: User = Depends(get_current_user)):
     username = current_user['sub']
-    user = await get_user_with_id(username)
-    user_id = user.id
-    result = await update_passport(user_id, passport)
+    result = await update_passport(username, passport)
     return result
 
 
 @router.patch("/", response_model=CreatePassport)
 async def update_partially_passport(passport: CreatePassport, current_user: User = Depends(get_current_user)):
     username = current_user['sub']
-    user = await get_user_with_id(username)
-    user_id = user.id
-    result = await update_current_passport_partially(user_id, passport)
+    result = await update_current_passport_partially(username, passport)
     return result
-

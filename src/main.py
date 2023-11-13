@@ -6,6 +6,7 @@ from src.services.auth.auth_routes import router as auth_routes
 from src.handlers.user_routes import router as user_routes
 from src.handlers.passport_routes import router as passport_router
 from src.handlers.department_routes import router as department_routes
+from src.handlers.employee_routes import router as employee_routes
 
 import pdb
 
@@ -15,6 +16,7 @@ app.include_router(user_routes, prefix='/user', tags=['Users'])
 app.include_router(auth_routes, prefix='/auth', tags=['Auth'])
 app.include_router(passport_router, prefix='/passport', tags=['Passports'])
 app.include_router(department_routes, prefix='/department', tags=['Departments'])
+app.include_router(employee_routes, prefix='/employee', tags=['Employees'])
 
 
 @app.get("/secure-data")

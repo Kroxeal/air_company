@@ -77,53 +77,25 @@ async def update_user(username: str, user: BaseUser):
 
 @db_connection
 async def update_user_partially(username: str, user: UserPatch):
-    query_params = [username]
-
-    if user.name is not None:
-        query_params.append(user.name)
-        name_update = "name = $2"
-    else:
-        name_update = ""
-
-    if user.surname is not None:
-        query_params.append(user.surname)
-        surname_update = "surname = $3"
-    else:
-        surname_update = ""
-
-    if user.email is not None:
-        query_params.append(user.email)
-        email_update = "email = $%d" % (len(query_params))
-    else:
-        email_update = ""
-
-    if user.phone_number is not None:
-        query_params.append(user.phone_number)
-        phone_number_update = "phone_number = $%d" % (len(query_params))
-    else:
-        phone_number_update = ""
-
-    update_query = f"""
+    query = '''
     UPDATE users
-    SET {', '.join(filter(None, [
-        name_update,
-        surname_update,
-        email_update,
-        phone_number_update
-    ]))}
-    WHERE username = $1
-    """
-    print(update_query)
-    print(*query_params)
-
-    result = await database.execute(update_query, *query_params)
-    print(result)
-    updated_user = await database.fetchrow(
-        "SELECT * FROM users WHERE username = $1",
-        username
+    SET
+    name = COALESCE($1, name),
+    surname = COALESCE($2, surname),
+    phone_number = COALESCE($3, phone_number),
+    email = COALESCE($4, email)
+    WHERE
+    username = $5
+    '''
+    values = (
+        user.name,
+        user.surname,
+        user.phone_number,
+        user.email,
+        username,
     )
-
-    return User(**updated_user)
+    await database.execute(query, *values)
+    return user
 
 
 

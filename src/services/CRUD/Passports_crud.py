@@ -59,9 +59,8 @@ async def get_passport_by_id(user_id: str):
         raise HTTPException(status_code=400, detail="There's no such a user")
 
 
-# this part is not work now!!
 @db_connection
-async def update_passport(user_id: str, passport: CreatePassport):
+async def update_passport(username: str, passport: CreatePassport):
     query = '''
     UPDATE passports
     SET 
@@ -71,7 +70,9 @@ async def update_passport(user_id: str, passport: CreatePassport):
     date_of_birth = $4,
     date_of_issue = $5,
     date_of_expire = $6
-    WHERE user_id = $7
+    WHERE user_id = (
+    SELECT id FROM users WHERE username = $7
+    )
     '''
     values = (
         passport.nationality,
@@ -80,7 +81,7 @@ async def update_passport(user_id: str, passport: CreatePassport):
         passport.date_of_birth,
         passport.date_of_issue,
         passport.date_of_expire,
-        user_id
+        username
     )
 
     await database.execute(query, *values)
@@ -88,80 +89,33 @@ async def update_passport(user_id: str, passport: CreatePassport):
 
 
 @db_connection
-async def update_current_passport_partially(user_id: str, passport: CreatePassport):
-    query_params = [user_id]
-
-    if passport.passport_number is not None:
-        query_params.append(passport.passport_number)
-        passport_number_update = "passport_number = $2"
-    else:
-        passport_number_update = ""
-
-    if passport.nationality is not None:
-        query_params.append(passport.nationality)
-        nationality_update = "nationality = $3"
-    else:
-        nationality_update = ""
-
-    if passport.sex is not None:
-        query_params.append(passport.sex)
-        sex_update = "sex = $4"
-    else:
-        sex_update = ""
-
-    if passport.address is not None:
-        query_params.append(passport.address)
-        address_update = "address = $5"
-    else:
-        address_update = ""
-
-    if passport.date_of_birth is not None:
-        query_params.append(passport.date_of_birth)
-        date_of_birth_update = "date_of_birth = $6"
-    else:
-        date_of_birth_update = ""
-
-    if passport.date_of_issue is not None:
-        query_params.append(passport.date_of_issue)
-        date_of_issue_update = "date_of_issue = $7"
-    else:
-        date_of_issue_update = ""
-
-    if passport.date_of_expire is not None:
-        query_params.append(passport.date_of_expire)
-        date_of_expire_update = "date_of_expire = $8"
-    else:
-        date_of_expire_update = ""
-
-    if passport.photo is not None:
-        query_params.append(passport.photo)
-        photo_update = "photo = $9"
-    else:
-        photo_update = ""
-
-    update_query = f"""
-    UPDATE passports
-    SET {', '.join(filter(None, [
-        passport_number_update,
-        nationality_update,
-        sex_update,
-        address_update,
-        date_of_birth_update,
-        date_of_issue_update,
-        date_of_expire_update,
-        photo_update
-    ]))}
-    WHERE user_id = $1
-    """
-
-    print(update_query)
-    print(*query_params)
-
-    result = await database.execute(update_query, *query_params)
-    print(result)
-    updated_user = await database.fetchrow(
-        "SELECT * FROM passports WHERE user_id = $1",
-        user_id
+async def update_current_passport_partially(username: str, passport: CreatePassport):
+    query = '''
+        UPDATE passports
+        SET 
+        passport_number = COALESCE($1, passport_number),
+        nationality = COALESCE($2, nationality),
+        sex = COALESCE($3, sex),
+        address = COALESCE($4, address),
+        date_of_birth = COALESCE($5, date_of_birth),
+        date_of_issue = COALESCE($6, date_of_issue),
+        date_of_expire = COALESCE($7, date_of_expire),
+        photo = COALESCE($8, photo)
+        WHERE
+        user_id = (
+        SELECT id FROM users WHERE username = $9
     )
-
-    return CreatePassport(**updated_user)
+    '''
+    values = (
+        passport.passport_number,
+        passport.nationality,
+        passport.sex,
+        passport.address,
+        passport.date_of_birth,
+        passport.date_of_issue,
+        passport.date_of_expire,
+        passport.photo,
+        username,
+    )
+    await database.execute(query, *values)
+    return passport
