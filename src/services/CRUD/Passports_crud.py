@@ -119,3 +119,19 @@ async def update_current_passport_partially(username: str, passport: CreatePassp
     )
     await database.execute(query, *values)
     return passport
+
+
+@db_connection
+async def delete_passport_f(username: str):
+    query = '''
+    DELETE FROM passports
+    WHERE
+    user_id = (
+    SELECT id FROM users WHERE username = $1
+    )
+    '''
+    values = (
+        username,
+    )
+    await database.execute(query, *values)
+    return f"{username}'s passport deleted"

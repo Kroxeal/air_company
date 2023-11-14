@@ -78,3 +78,16 @@ async def change_department_partially(name: str, department: Department):
     )
     await database.execute(query, *values)
     return department
+
+
+@db_connection
+async def delete_department_f(department_name: str):
+    query = '''
+    DELETE FROM departments
+    WHERE name = $1
+    '''
+    values = (
+        department_name,
+    )
+    await database.execute(query, *values)
+    return f'Department {department_name} deleted'

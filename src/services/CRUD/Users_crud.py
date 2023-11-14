@@ -98,4 +98,14 @@ async def update_user_partially(username: str, user: UserPatch):
     return user
 
 
-
+@db_connection
+async def delete_user_f(username: str):
+    query = '''
+    DELETE FROM users
+    WHERE username = $1
+    '''
+    values = (
+        username,
+    )
+    await database.execute(query, *values)
+    return f'User {username} deleted'

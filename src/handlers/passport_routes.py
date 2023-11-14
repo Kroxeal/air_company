@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends
-from pydantic import UUID4
 
 from src.db.models import CreatePassport, BasePassport, User
 from src.services.CRUD.Passports_crud import create_passport, get_passport, get_passport_by_id, update_passport, \
-    update_current_passport_partially
-from src.services.CRUD.Users_crud import get_user, get_user_with_id
+    update_current_passport_partially, delete_passport_f
+from src.services.CRUD.Users_crud import get_user_with_id
 from src.services.auth.auth import get_current_user
 
 router = APIRouter()
@@ -53,3 +52,8 @@ async def update_partially_passport(passport: CreatePassport, current_user: User
     username = current_user['sub']
     result = await update_current_passport_partially(username, passport)
     return result
+
+
+@router.delete('/')
+async def delete_passport(username: str):
+    return await delete_passport_f(username)

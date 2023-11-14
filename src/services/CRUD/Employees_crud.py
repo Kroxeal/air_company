@@ -126,3 +126,18 @@ async def update_employee_partially_patch(username: str, employee: PatchEmployee
     )
     await database.execute(query, *values)
     return employee
+
+
+@db_connection
+async def delete_employee_f(username: str):
+    query = '''
+    DELETE FROM employees
+    WHERE user_id = (
+    SELECT id FROM users WHERE username = $1
+    )
+    '''
+    values = (
+        username,
+    )
+    await database.execute(query, *values)
+    return f'Employee {username} deleted'

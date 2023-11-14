@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from src.db.models import User, UserResponse, BaseUser, UserPatch
-from src.services.CRUD.Users_crud import create_user, get_user, update_user, update_user_partially
+from src.services.CRUD.Users_crud import create_user, get_user, update_user, update_user_partially, delete_user_f
 
 router = APIRouter()
 
@@ -37,3 +37,7 @@ async def change_user(username: str, user: BaseUser):
 async def update_user(username: str, user: UserPatch):
     return await update_user_partially(username, user)
 
+
+@router.delete('/')
+async def delete_user(username: str):
+    return await delete_user_f(username)
