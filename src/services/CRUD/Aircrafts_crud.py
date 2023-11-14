@@ -1,0 +1,92 @@
+from src.db.models import Aircraft, PatchAircraft
+from src.db.settings import database
+from src.services.decorators.connect_decorator import db_connection
+
+
+@db_connection
+async def create_aircraft_raw(aircraft: Aircraft):
+    query = '''
+    INSERT INTO aircrafts(
+    name,
+    model,
+    year_manufacture,
+    seating_capacity,
+    max_range,
+    engine_type,
+    status,
+    last_service,
+    manufacture
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    '''
+    values = (
+        aircraft.name,
+        aircraft.model,
+        aircraft.year_manufacture,
+        aircraft.seating_capacity,
+        aircraft.max_range,
+        aircraft.engine_type,
+        aircraft.status,
+        aircraft.last_service,
+        aircraft.manufacture,
+    )
+    await database.execute(query, *values)
+    return aircraft
+
+
+@db_connection
+async def get_aircraft_raw(model: str):
+    query = '''
+    SELECT * FROM aircrafts
+    WHERE model = $1
+    '''
+    values = (
+        model,
+    )
+
+    result = await database.fetchrow(query, *values)
+    return Aircraft(**result)
+
+
+@db_connection
+async def update_aircraft_partially_raw(model: str, aircraft: PatchAircraft):
+    query = '''
+    UPDATE aircrafts
+    SET
+    name = COALESCE($1, name),
+    model = COALESCE($2, model),
+    year_manufacture = COALESCE($3, year_manufacture),
+    seating_capacity = COALESCE($4, seating_capacity),
+    max_range = COALESCE($5, max_range),
+    engine_type = COALESCE($6, engine_type),
+    status = COALESCE($7, status),
+    last_service = COALESCE($8, last_service)
+    WHERE model = $9
+    '''
+    values = (
+        aircraft.name,
+        aircraft.model,
+        aircraft.year_manufacture,
+        aircraft.seating_capacity,
+        aircraft.max_range,
+        aircraft.engine_type,
+        aircraft.status,
+        aircraft.last_service,
+        model,
+    )
+    await database.execute(query, *values)
+    return aircraft
+
+
+@db_connection
+async def delete_aircraft_raw(model: str):
+    query = '''
+    DELETE FROM
+    aircrafts
+    WHERE model = $1
+    '''
+    values = (
+        model,
+    )
+    await database.execute(query, *values)
+    return f'Aircraft {model} deleted'

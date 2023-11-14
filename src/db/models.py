@@ -38,13 +38,25 @@ class CreateEmployee(BaseModel):
 class Aircraft(BaseModel):
     name: str
     model: str
-    year_manufacturer: int
+    year_manufacture: int
     seating_capacity: int
     max_range: int
     engine_type: str
     status: str
-    last_service: str
-    manufacturer: str
+    last_service: date
+    manufacture: str
+
+
+class PatchAircraft(BaseModel):
+    name: str = None
+    model: str = None
+    year_manufacture: int = None
+    seating_capacity: int = None
+    max_range: int = None
+    engine_type: str = None
+    status: str = None
+    last_service: date = None
+    manufacture: str = None
 
 
 class Flight(BaseModel):
