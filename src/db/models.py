@@ -1,7 +1,8 @@
+import datetime
 import decimal
 
 from pydantic import BaseModel, UUID4, Field
-from datetime import date
+from datetime import date, timezone
 
 
 class BaseUser(BaseModel):
@@ -60,23 +61,47 @@ class PatchAircraft(BaseModel):
 
 
 class Flight(BaseModel):
-    flight_number: int
-    departure_datetime: str
-    arrival_datetime: str
+    flight_number: str
+    departure_datetime: datetime.datetime
+    arrival_datetime: datetime.datetime
     departure_airport: str
     arrival_airport: str
     available_seats: int
     ticket_price: float
-    aircraft_id: UUID4
+
+
+class PatchFlight(BaseModel):
+    flight_number: str = None
+    departure_datetime: datetime.datetime = None
+    arrival_datetime: datetime.datetime = None
+    departure_airport: str = None
+    arrival_airport: str = None
+    available_seats: int = None
+    ticket_price: float = None
 
 
 class Ticket(BaseModel):
-    flight_id: UUID4
-    user_id: UUID4
     service_class: str
     price: float
     status: str
-    booking_date: str
+    booking_date: datetime.datetime
+
+
+class TicketDetails(BaseModel):
+    flight_id: str
+    user_id: str
+    service_class: str
+    price: float
+    status: str
+    booking_date: datetime.datetime
+
+
+class PatchTicket(BaseModel):
+    flight_number: str = None
+    service_class: str = None
+    price: float = None
+    status: str = None
+    booking_date: datetime.datetime = None
 
 
 class CreatePassport(BasePassport):

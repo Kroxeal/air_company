@@ -23,7 +23,7 @@ async def create_tables():
     await database.execute("""
     CREATE TABLE IF NOT EXISTS Flights (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        flight_number INT,
+        flight_number VARCHAR(30),
         departure_datetime TIMESTAMP NOT NULL,
         arrival_datetime TIMESTAMP NOT NULL,
         departure_airport VARCHAR(100) NOT NULL,

@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from src.db.models import BaseEmployee, EmployeeDetails, PatchEmployee, CreateEmployee
 from src.services.CRUD.Employees_crud import create_employee, get_employee, get_employee_with_details, \
-    update_employee_put, update_employee_partially_patch, delete_employee_f
+    update_employee_put, update_employee_partially_patch, delete_employee_f, if_user_is_employee
 
 router = APIRouter()
 
@@ -45,3 +45,7 @@ async def update_employee_partially(username: str, employee: PatchEmployee):
 async def delete_employee(username: str):
     return await delete_employee_f(username)
 
+
+@router.get('/isemployee/{username}', response_model=PatchEmployee)
+async def is_employee(username: str):
+    return await if_user_is_employee(username)

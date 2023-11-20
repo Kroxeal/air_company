@@ -78,7 +78,7 @@ async def get_employee_with_details(username: str):
         employee = EmployeeDetails(**employee_data)
         return employee
     else:
-        raise HTTPException(status_code=400, detail="There's no such a Employee")
+        raise HTTPException(status_code=400, detail="There's no such an Employee")
 
 
 @db_connection
@@ -141,3 +141,25 @@ async def delete_employee_f(username: str):
     )
     await database.execute(query, *values)
     return f'Employee {username} deleted'
+
+
+@db_connection
+async def if_user_is_employee(username: str):
+    print('hello')
+    query = '''
+    SELECT position, salary, status
+    FROM employees
+    LEFT JOIN Users ON employees.user_id = users.id
+    WHERE Users.username = $1
+    '''
+    values = (
+        username,
+    )
+    print(query)
+    print(values)
+    result = await database.fetchrow(query, *values)
+    print(result)
+    if result:
+        return PatchEmployee(**result)
+    else:
+        raise HTTPException(status_code=400, detail="There's no such an Employee")

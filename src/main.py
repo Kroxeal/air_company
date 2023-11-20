@@ -8,6 +8,8 @@ from src.handlers.passport_routes import router as passport_router
 from src.handlers.department_routes import router as department_routes
 from src.handlers.employee_routes import router as employee_routes
 from src.handlers.aircraft_routes import router as aircraft_routes
+from src.handlers.flight_routes import router as flight_routes
+from src.handlers.ticket_routes import router as ticket_router
 
 import pdb
 
@@ -19,6 +21,8 @@ app.include_router(passport_router, prefix='/passport', tags=['Passports'])
 app.include_router(department_routes, prefix='/department', tags=['Departments'])
 app.include_router(employee_routes, prefix='/employee', tags=['Employees'])
 app.include_router(aircraft_routes, prefix='/aircraft', tags=['Aircrafts'])
+app.include_router(flight_routes, prefix='/flight', tags=['Flights'])
+app.include_router(ticket_router, prefix='/ticket', tags=['Tickets'])
 
 
 @app.get("/secure-data")
