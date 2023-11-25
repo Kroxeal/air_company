@@ -36,13 +36,15 @@ async def create_user(user: User):
 
 @db_connection
 async def get_user(username: str):
+    print('hi 404')
     query = 'SELECT * FROM users WHERE username = $1'
     result = await database.fetchrow(query, username)
     if result:
         user = User(**result)
-        return user
+        print(user)
+        return user #huynya
     else:
-        raise HTTPException(status_code=400, detail="There's no such a user")
+        raise HTTPException(status_code=404, detail="There's no such a user")
 
 
 @db_connection
@@ -53,7 +55,7 @@ async def get_user_with_id(username: str):
         user = UserID(**result)
         return user
     else:
-        raise HTTPException(status_code=400, detail="There's no such a user")
+        raise HTTPException(status_code=405, detail="There's no such a user")
 
 
 @db_connection
@@ -109,3 +111,19 @@ async def delete_user_f(username: str):
     )
     await database.execute(query, *values)
     return f'User {username} deleted'
+
+
+@db_connection
+async def get_all_users():
+    print('hello')
+    query = '''
+    SELECT * FROM
+    users
+    '''
+    try:
+        result = await database.fetchall(query)
+        print(result)
+        return result
+    except Exception as e:
+        print(f"Error executing SQL query: {e}")
+        return []

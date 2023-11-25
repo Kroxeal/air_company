@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Подключаем Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0 text-center">Login</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Форма входа -->
+                        <form id="loginForm">
+                            <div class="form-group">
+                                <label for="username">Username:</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="text-center">
+                                <button type="button" class="btn btn-primary" onclick="submitLoginForm()">Login</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключаем Bootstrap JS (необходим для работы некоторых компонентов) -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <!-- Скрипт для обработки отправки формы -->
+    <script>
+    function submitLoginForm() {
+        var username = $("#username").val();
+        var password = $("#password").val();
+
+        // Отправляем POST-запрос на сервер
+        fetch("/auth/i", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                username: username,
+                password: password,
+            }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Сохраняем токен в куки
+            document.cookie = `access_token=${data.access_token}; path=/`;
+
+            // Добавляем токен к заголовкам для будущих запросов
+            setAuthorizationHeader(data.access_token);
+
+            // Переход на другую страницу
+            window.location.href = "/welcome/hi";
+        })
+        .catch(error => {
+            alert("Error: " + error.message);
+        });
+    }
+
+    // Функция для установки токена в заголовках
+    function setAuthorizationHeader(token) {
+        const headers = new Headers({
+            "Authorization": `Bearer ${token}`,
+        });
+
+        // Сохраняем заголовки в переменной
+        window.authorizationHeaders = headers;
+    }
+</script>
+
+</body>
+</html>

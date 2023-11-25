@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Depends
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.db.models import User
 from src.services.auth.auth import get_current_user
@@ -10,6 +12,8 @@ from src.handlers.employee_routes import router as employee_routes
 from src.handlers.aircraft_routes import router as aircraft_routes
 from src.handlers.flight_routes import router as flight_routes
 from src.handlers.ticket_routes import router as ticket_router
+from src.handlers.login_routes import router as login_routes
+from src.handlers.welcome import router as welcome_routes
 
 import pdb
 
@@ -23,6 +27,26 @@ app.include_router(employee_routes, prefix='/employee', tags=['Employees'])
 app.include_router(aircraft_routes, prefix='/aircraft', tags=['Aircrafts'])
 app.include_router(flight_routes, prefix='/flight', tags=['Flights'])
 app.include_router(ticket_router, prefix='/ticket', tags=['Tickets'])
+app.include_router(login_routes, prefix='/login', tags=['Login'])
+app.include_router(welcome_routes, prefix='/welcome', tags=['Welcome'])
+
+app.mount("/welcome/assets", StaticFiles(directory="static"), name="static")
+
+
+
+origins = [
+    "http://localhost",
+    "http://localhost:8000",
+    "http://localhost:3000",  # Если ваш фронтэнд развернут на другом домене
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/secure-data")

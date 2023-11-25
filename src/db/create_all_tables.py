@@ -42,7 +42,8 @@ async def create_tables():
         surname VARCHAR(100),
         phone_number VARCHAR(20),
         email VARCHAR(255),
-        password VARCHAR(255) NOT NULL
+        password VARCHAR(255) NOT NULL,
+        role VARCHAR(30) CHECK (new_column_name IN ('user', 'admin', 'employee'))
     )
     """)
 

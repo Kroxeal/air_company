@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <!-- Подключаем Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Навбар -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Air Company</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="navbar-item">
+                    <a class="nav-link"  href="{{ url_for('users_all/da') }}">Users</a>
+                </li>
+                <!-- Добавьте другие пункты меню, если нужно -->
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Приветствие -->
+    <div class="container mt-3">
+        <h1>Welcome!</h1>
+        <p>Thank you for using our app.</p>
+    </div>
+
+    <!-- Подключаем Bootstrap JS (необходим для работы некоторых компонентов) -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<!-- Подключение Bootstrap JS и Popper.js (необходимо для некоторых компонентов Bootstrap) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Функция для загрузки данных с сервера и отображения на странице
+    async function loadUsers() {
+        console.log('token');
+
+        // Получаем токен из куки
+        const token = getCookie('access_token');
+        console.log(token);
+        // Если токен не найден, перенаправляем пользователя на страницу аутентификации
+        if (!token) {
+            window.location.href = '/auth/i';
+            return;
+        }
+
+        // Заголовки с токеном
+        const headers = {
+            'Authorization': `Bearer ${token}`,
+            credentials: 'include',
+        };
+        console.log(headers);
+
+    // Функция для получения значения из куки по имени
+    function getCookie(name) {
+        const matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }}
+
+    </script>
+</body>
+</html>

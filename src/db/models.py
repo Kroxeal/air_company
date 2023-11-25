@@ -118,6 +118,7 @@ class CreatePassport(BasePassport):
 class User(BaseUser):
     username: str
     password: str
+    role: str = None
 
 
 class UserID(BaseUser):
@@ -133,6 +134,7 @@ class UserPatch(BaseUser):
     surname: str = None
     phone_number: str = None
     email: str = None
+    role: str = None
 
 
 class BaseDepartment(BaseModel):
