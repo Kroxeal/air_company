@@ -31,7 +31,7 @@ app.include_router(login_routes, prefix='/login', tags=['Login'])
 app.include_router(welcome_routes, prefix='/welcome', tags=['Welcome'])
 
 app.mount("/welcome/assets", StaticFiles(directory="static"), name="static")
-
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 origins = [

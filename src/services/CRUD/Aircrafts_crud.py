@@ -90,3 +90,28 @@ async def delete_aircraft_raw(model: str):
     )
     await database.execute(query, *values)
     return f'Aircraft {model} deleted'
+
+
+@db_connection
+async def get_all_aircrafts_f():
+    query = '''
+    SELECT * FROM aircrafts;
+    '''
+    results = await database.fetchall(query)
+    aircrafts_lst = []
+    for result in results:
+        aircrafts_dict = {
+            'name': result['name'],
+            'model': result['model'],
+            'year_manufacture': result['year_manufacture'],
+            'seating_capacity': result['seating_capacity'],
+            'max_range': result['max_range'],
+            'engine_type': result['engine_type'],
+            'status': result['status'],
+            'last_service': result['last_service'],
+            'manufacture': result['manufacture'],
+            'registration_number': result['registration_number'],
+        }
+        aircrafts_lst.append(Aircraft(**aircrafts_dict))
+    print({'aircrafts': aircrafts_lst})
+    return aircrafts_lst

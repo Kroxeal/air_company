@@ -1,13 +1,13 @@
 from fastapi import HTTPException
 
-from src.db.models import User, UserResponse, BaseUser, UserPatch, UserID
+from src.db.models import User, UserResponse, BaseUser, UserPatch, UserID, PostUser
 from src.db.settings import database
 from src.services.password_hash import HashingPassword
 from src.services.decorators.connect_decorator import db_connection
 
 
 @db_connection
-async def create_user(user: User):
+async def create_user(user: PostUser):
     hashed_password = HashingPassword.password_to_hash(user.password)
     query = """
     INSERT INTO Users (
@@ -16,9 +16,10 @@ async def create_user(user: User):
         surname,
         phone_number,
         email,
-        password
+        password,
+        role
         )
-    VALUES ($1, $2, $3, $4, $5, $6)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     """
     values = (
         user.username,
@@ -27,6 +28,7 @@ async def create_user(user: User):
         user.phone_number,
         user.email,
         hashed_password,
+        user.role
     )
 
     await database.execute(query, *values)
@@ -85,15 +87,17 @@ async def update_user_partially(username: str, user: UserPatch):
     name = COALESCE($1, name),
     surname = COALESCE($2, surname),
     phone_number = COALESCE($3, phone_number),
-    email = COALESCE($4, email)
+    email = COALESCE($4, email),
+    role = COALESCE($5, role)
     WHERE
-    username = $5
+    username = $6
     '''
     values = (
         user.name,
         user.surname,
         user.phone_number,
         user.email,
+        user.role,
         username,
     )
     await database.execute(query, *values)

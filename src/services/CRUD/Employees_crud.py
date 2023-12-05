@@ -1,12 +1,12 @@
 from fastapi import HTTPException
 
-from src.db.models import BaseEmployee, EmployeeDetails, PatchEmployee, CreateEmployee
+from src.db.models import BaseEmployee, EmployeeDetails, PatchEmployee, CreateEmployee, EmployeeUsers
 from src.db.settings import database
 from src.services.decorators.connect_decorator import db_connection
 
 
 @db_connection
-async def create_employee(username: str, department_name: str, employee: CreateEmployee):
+async def create_employee(employee: CreateEmployee):
     query_params = """
     INSERT INTO employees(
     position,
@@ -27,17 +27,17 @@ async def create_employee(username: str, department_name: str, employee: CreateE
         employee.position,
         employee.salary,
         employee.status,
-        department_name,
-        username,
+        employee.department,
+        employee.username,
     )
-    await database.execute(query_params, *values)
-
+    result = await database.execute(query_params, *values)
+    print(result)
     return employee
 
 
 @db_connection
 async def get_employee(username: str):
-    isert_query = """
+    insert_query = """
     SELECT * FROM employees
     WHERE user_id = (
     SELECT id FROM employees WHERE username = $1
@@ -46,7 +46,7 @@ async def get_employee(username: str):
     values = (
         username,
     )
-    result = await database.fetchrow(isert_query, *values)
+    result = await database.fetchrow(insert_query, *values)
     if result:
         employee = BaseEmployee(**result)
         return employee
@@ -163,3 +163,34 @@ async def if_user_is_employee(username: str):
         return PatchEmployee(**result)
     else:
         raise HTTPException(status_code=400, detail="There's no such an Employee")
+
+
+@db_connection
+async def get_all_employees():
+    print('enter get_all_employees crud')
+
+    query = '''
+    SELECT
+        users.name, users.surname, users.username,
+        employees.*, departments.name as department_name
+        
+    FROM Employees
+    INNER JOIN Users ON Employees.user_id = users.id
+    INNER JOIN Departments ON Employees.department_id = departments.id
+    '''
+    result = await database.fetchall(query)
+    print({"result": result})
+    employee_data_list = []
+    for row in result:
+        employee_data = {
+            "name": row["name"],
+            "surname": row["surname"],
+            "position": row["position"],
+            "salary": row["salary"],
+            "status": row["status"],
+            "department": row["department_name"],
+            "username": row["username"],
+        }
+        employee_data_list.append(EmployeeUsers(**employee_data))
+
+    return employee_data_list

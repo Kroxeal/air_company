@@ -5,6 +5,7 @@ from src.services.decorators.connect_decorator import db_connection
 
 @db_connection
 async def create_department(department: BaseDepartment):
+    print(department)
     insert_query = """
     INSERT INTO departments (
     name, 
@@ -91,3 +92,13 @@ async def delete_department_f(department_name: str):
     )
     await database.execute(query, *values)
     return f'Department {department_name} deleted'
+
+
+@db_connection
+async def get_all_departments_f():
+    query = '''
+    SELECT * FROM departments;
+    '''
+    result = await database.fetchall(query)
+    return result
+

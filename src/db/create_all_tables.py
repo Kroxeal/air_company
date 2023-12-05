@@ -57,7 +57,7 @@ async def create_tables():
             date_of_birth DATE NOT NULL,
             date_of_issue DATE NOT NULL,
             date_of_expire DATE NOT NULL,
-            photo BYTEA,
+            photo varchar(150),
             user_id UUID NOT NULL REFERENCES Users(id) ON DELETE CASCADE
         )
         """)
