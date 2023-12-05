@@ -1,8 +1,10 @@
 import datetime
 import decimal
 
-from pydantic import BaseModel, UUID4, Field
+from fastapi import UploadFile
+from pydantic import BaseModel, UUID4, Field, model_validator
 from datetime import date, timezone
+import json
 
 
 class BaseUser(BaseModel):
@@ -10,6 +12,16 @@ class BaseUser(BaseModel):
     surname: str
     phone_number: str
     email: str
+
+
+class PostUser(BaseModel):
+    username: str
+    name: str
+    surname: str
+    phone_number: str
+    email: str
+    password: str
+    role: str
 
 
 class BasePassport(BaseModel):
@@ -31,6 +43,8 @@ class BaseEmployee(BaseModel):
 
 
 class CreateEmployee(BaseModel):
+    username: str
+    department: str
     position: str
     salary: decimal.Decimal
     status: str
@@ -46,7 +60,7 @@ class Aircraft(BaseModel):
     status: str
     last_service: date
     manufacture: str
-
+    registration_number: str
 
 class PatchAircraft(BaseModel):
     name: str = None
@@ -104,7 +118,7 @@ class PatchTicket(BaseModel):
     booking_date: datetime.datetime = None
 
 
-class CreatePassport(BasePassport):
+class CreatePassport(BaseModel):
     passport_number: str = None
     nationality: str = None
     sex: str = None
@@ -112,8 +126,15 @@ class CreatePassport(BasePassport):
     date_of_birth: date = None
     date_of_issue: date = None
     date_of_expire: date = None
-    photo: bytes = None
-
+    photo: str = None
+    @model_validator(mode='before')
+    @classmethod
+    def validate_to_json(cls, value):
+        if isinstance(value, str):
+            print('dec')
+            print({**json.loads(value)})
+            return cls(**json.loads(value))
+        return value
 
 class User(BaseUser):
     username: str
@@ -135,6 +156,15 @@ class UserPatch(BaseUser):
     phone_number: str = None
     email: str = None
     role: str = None
+
+
+class UserAll(BaseUser):
+    name: str = None
+    surname: str = None
+    phone_number: str = None
+    email: str = None
+    role: str = None
+    username: str
 
 
 class BaseDepartment(BaseModel):
@@ -161,3 +191,33 @@ class PatchEmployee(BaseModel):
     salary: decimal.Decimal = None
     status: str = None
     department_name: str = None
+
+
+class EmployeeUsers(BaseModel):
+    name: str
+    surname: str
+    position: str
+    salary: decimal.Decimal
+    status: str
+    department: str
+    username: str
+
+
+class PassportUsername(BaseModel):
+    username: str
+    passport_number: str
+    nationality: str
+    sex: str
+    address: str
+    date_of_birth: date
+    date_of_issue: date
+    date_of_expire: date
+
+    @model_validator(mode='before')
+    @classmethod
+    def validate_to_json(cls, value):
+        if isinstance(value, str):
+            print('dec')
+            print({**json.loads(value)})
+            return cls(**json.loads(value))
+        return value
