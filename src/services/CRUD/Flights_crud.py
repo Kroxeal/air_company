@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from src.db.models import Flight, PatchFlight
+from src.db.models import Flight, PatchFlight, FlightAll
 from src.db.settings import database
 from src.services.decorators.connect_decorator import db_connection
 
 
 @db_connection
-async def create_flight_raw(model: str, flight: Flight):
+async def create_flight_raw(flight: Flight):
     query = '''
     INSERT INTO
     flights (
@@ -27,7 +27,7 @@ async def create_flight_raw(model: str, flight: Flight):
         $5,
         $6,
         $7,
-        (SELECT id FROM aircrafts WHERE model = $8)
+        $8
     )
     '''
     values = (
@@ -36,9 +36,9 @@ async def create_flight_raw(model: str, flight: Flight):
         flight.arrival_datetime,
         flight.departure_airport,
         flight.arrival_airport,
-        flight.available_seats,
-        flight.ticket_price,
-        model,
+        int(flight.available_seats),
+        float(flight.ticket_price),
+        flight.aircraft
     )
     await database.execute(query, *values)
     return flight
@@ -69,9 +69,10 @@ async def update_flight_partially_raw(flight_number: str, flight: PatchFlight):
     departure_airport = COALESCE($4, departure_airport),
     arrival_airport = COALESCE($5, arrival_airport),
     available_seats = COALESCE($6, available_seats),
-    ticket_price = COALESCE($7, ticket_price)
+    ticket_price = COALESCE($7, ticket_price),
+    aircraft_id = COALESCE($8, aircraft_id)
     WHERE
-    flight_number = $8   
+    flight_number = $9   
     '''
     values = (
         flight.flight_number,
@@ -81,6 +82,7 @@ async def update_flight_partially_raw(flight_number: str, flight: PatchFlight):
         flight.arrival_airport,
         flight.available_seats,
         flight.ticket_price,
+        flight.aircraft,
         flight_number,
     )
 
@@ -103,4 +105,29 @@ async def delete_flight_raw(flight_number: str):
     return f'Flight {flight_number} deleted'
 
 
+@db_connection
+async def get_all_flight_raw():
+    query = '''
+    SELECT 
+        flights.*,
+        aircrafts.name,
+        aircrafts.model
+    FROM Flights
+    INNER JOIN Aircrafts ON flights.aircraft_id = aircrafts.id
+    '''
+    results = await database.fetchall(query)
+    flight_lst = []
+    for result in results:
+        flight_dict = {
+            'flight_number': result['flight_number'],
+            'departure_datetime': result['departure_datetime'],
+            'departure_airport': result['departure_airport'],
+            'arrival_datetime': result['arrival_datetime'],
+            'arrival_airport': result['arrival_airport'],
+            'available_seats': result['available_seats'],
+            'ticket_price': result['ticket_price'],
+            'aircraft': result['name'] + ' ' + result['model'],
+        }
+        flight_lst.append(FlightAll(**flight_dict))
+    return flight_lst
 

@@ -48,8 +48,8 @@
                         <td>{{ aircraft.manufacture }}</td>
                         <td>{{ aircraft.registration_number }}</td>
                         <td>
-                        <button class="btn btn-primary" onclick="editAircraft('{{ aircraft.model }}')">Edit</button>
-                        <button class="btn btn-danger" onclick="deleteAircraft('{{ aircraft.model }}')">Delete</button>
+                        <button class="btn btn-primary" onclick="editAircraft('{{ aircraft.registration_number }}')">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteAircraft('{{ aircraft.registration_number }}')">Delete</button>
                     </td>
                     </tr>
                 {% endfor %}
@@ -63,16 +63,16 @@
          window.location.href = `/aircraft/add_form`;
     }
 
-    function editAircraft(model) {
-            console.log(model)
-            window.location.href = `/aircraft/edit_form/${model}`;
+    function editAircraft(registration_number) {
+            console.log(registration_number)
+            window.location.href = `/aircraft/edit_form/${registration_number}`;
         }
 
-    function deleteAircraft(model) {
+    function deleteAircraft(registration_number) {
         if (confirm("Are you sure you want to delete this aircraft?")) {
                 $.ajax({
 
-                    url: `/aircraft/delete/${model}`,
+                    url: `/aircraft/delete/${registration_number}`,
                     type: 'DELETE',
                     success: function () {
                         console.log('in function');

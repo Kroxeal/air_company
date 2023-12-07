@@ -62,6 +62,13 @@ class Aircraft(BaseModel):
     manufacture: str
     registration_number: str
 
+
+class AircraftModel(BaseModel):
+    name: str
+    model: str
+    id: UUID4
+
+
 class PatchAircraft(BaseModel):
     name: str = None
     model: str = None
@@ -72,16 +79,18 @@ class PatchAircraft(BaseModel):
     status: str = None
     last_service: date = None
     manufacture: str = None
+    registration_number: str = None
 
 
 class Flight(BaseModel):
     flight_number: str
-    departure_datetime: datetime.datetime
-    arrival_datetime: datetime.datetime
     departure_airport: str
+    departure_datetime: datetime.datetime
     arrival_airport: str
-    available_seats: int
-    ticket_price: float
+    arrival_datetime: datetime.datetime
+    available_seats: str
+    ticket_price: str
+    aircraft: str
 
 
 class PatchFlight(BaseModel):
@@ -92,6 +101,18 @@ class PatchFlight(BaseModel):
     arrival_airport: str = None
     available_seats: int = None
     ticket_price: float = None
+    aircraft: str = None
+
+
+class FlightAll(BaseModel):
+    flight_number: str
+    departure_datetime: datetime.datetime
+    arrival_datetime: datetime.datetime
+    departure_airport: str
+    arrival_airport: str
+    available_seats: int
+    ticket_price: float
+    aircraft: str
 
 
 class Ticket(BaseModel):
