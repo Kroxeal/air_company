@@ -1,5 +1,8 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from starlette.templating import Jinja2Templates
+
+from src.db.models import UserPatch
+from src.services.auth.auth import get_current_admin
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.db.models import Flight, PatchFlight, FlightAll
+from src.db.models import Flight, PatchFlight, FlightAll, FlightModel
 from src.db.settings import database
 from src.services.decorators.connect_decorator import db_connection
 
@@ -131,3 +131,27 @@ async def get_all_flight_raw():
         flight_lst.append(FlightAll(**flight_dict))
     return flight_lst
 
+
+@db_connection
+async def get_all_flight_form():
+    query = '''
+    SELECT 
+        flights.id,
+        flights.departure_airport,
+        flights.arrival_airport,
+        flights.departure_datetime,
+        flights.arrival_datetime
+    FROM flights        
+    '''
+    results = await database.fetchall(query)
+    flight_lst = []
+    for result in results:
+        flight_dict = {
+            'id': result['id'],
+            'departure_airport': result['departure_airport'],
+            'departure_datetime': result['departure_datetime'],
+            'arrival_datetime': result['arrival_datetime'],
+            'arrival_airport': result['arrival_airport'],
+        }
+        flight_lst.append(FlightModel(**flight_dict))
+    return flight_lst

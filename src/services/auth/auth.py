@@ -4,18 +4,18 @@ from datetime import datetime, timedelta
 
 import jwt
 from dotenv import load_dotenv
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from fastapi.params import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
-
+from src.services.auth.Auth2PasswordCookie import OAuth2PasswordBearerWithCookie
 from src.db.models import User, UserPatch
 
 load_dotenv()
 
 SECRET_KEY = secrets.token_hex(32)
 ALGORITHM = os.getenv('ALGORITHM')
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/i")
+oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/auth/i")
 
 
 def create_access_token(username: str, role: str):
@@ -27,7 +27,9 @@ def create_access_token(username: str, role: str):
     return encoded_jwt
 
 
-def decode_access_token(token: str):
+def decode_access_token(request: Request):
+    token = request.cookies.get("access_token")
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         print('payload')
@@ -37,8 +39,8 @@ def decode_access_token(token: str):
         raise HTTPException(status_code=401, detail="Invalid access token")
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-    user = decode_access_token(token)
+async def get_current_user(request: Request):
+    user = decode_access_token(request)
     print('user_encode')
     print(user)
     if user is None:

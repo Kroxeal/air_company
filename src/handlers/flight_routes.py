@@ -3,7 +3,7 @@ from starlette.templating import Jinja2Templates
 
 from src.db.models import Flight, PatchFlight
 from src.services.CRUD.Flights_crud import create_flight_raw, get_flight_raw, update_flight_partially_raw, \
-    delete_flight_raw, get_all_flight_raw
+    delete_flight_raw, get_all_flight_raw, get_all_flight_form
 
 router = APIRouter()
 templates = Jinja2Templates(directory='templates')
@@ -58,3 +58,12 @@ async def get_edit_flight_form(request: Request, flight_number: str):
         'flight_number': flight_number,
     }
     return templates.TemplateResponse('flight/update_flight.html', context=context)
+
+
+@router.get('/get_flights_form/all')
+async def get_flights_form():
+    flights = await get_all_flight_form()
+    context = {
+        'flight': flights,
+    }
+    return context

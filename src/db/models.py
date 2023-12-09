@@ -82,6 +82,17 @@ class PatchAircraft(BaseModel):
     registration_number: str = None
 
 
+class PostTicket(BaseModel):
+    flight_id: UUID4
+    user_id: UUID4
+    departure_datetime: datetime.datetime
+    arrival_airport: str
+    arrival_datetime: datetime.datetime
+    available_seats: str
+    ticket_price: str
+    aircraft: str
+
+
 class Flight(BaseModel):
     flight_number: str
     departure_airport: str
@@ -115,6 +126,14 @@ class FlightAll(BaseModel):
     aircraft: str
 
 
+class FlightModel(BaseModel):
+    id: UUID4
+    departure_datetime: datetime.datetime
+    arrival_datetime: datetime.datetime
+    departure_airport: str
+    arrival_airport: str
+
+
 class Ticket(BaseModel):
     service_class: str
     price: float
@@ -131,8 +150,37 @@ class TicketDetails(BaseModel):
     booking_date: datetime.datetime
 
 
+class TicketAll(BaseModel):
+    id: UUID4
+    flight: str
+    user: str
+    service_class: str
+    price: float
+    status: str
+    booking_date: datetime.datetime
+
+
+class TicketCreate(BaseModel):
+    flight: UUID4
+    user: UUID4
+    service_class: str
+    price: str
+    status: str
+    booking_date: datetime.datetime
+
+
 class PatchTicket(BaseModel):
     flight_number: str = None
+    service_class: str = None
+    price: float = None
+    status: str = None
+    booking_date: datetime.datetime = None
+
+
+class TicketPatch(BaseModel):
+    id: UUID4 = None
+    flight: str = None
+    user: str = None
     service_class: str = None
     price: float = None
     status: str = None
@@ -186,6 +234,12 @@ class UserAll(BaseUser):
     email: str = None
     role: str = None
     username: str
+
+
+class UserForm(BaseModel):
+    id: UUID4
+    name: str
+    surname: str
 
 
 class BaseDepartment(BaseModel):

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, JSONResponse
 
-from src.db.models import User, UserResponse, BaseUser, UserPatch, UserAll, PostUser
+from src.db.models import User, UserResponse, BaseUser, UserPatch, UserAll, PostUser, UserForm
 from src.services.CRUD.Users_crud import create_user, get_user, update_user, update_user_partially, delete_user_f, \
     get_all_users
 from src.services.auth.auth import get_current_admin, get_current_user, get_current_userr
@@ -58,8 +58,8 @@ async def delete_user(username: str):
     return await delete_user_f(username)
 
 
-@router.get('/users_all/da', response_class=HTMLResponse, name='users_all/da')
-async def get_all_f_users(request: Request):
+@router.get('/users_all/da', name='users_all/da')
+async def get_all_f_users(request: Request, current_user: UserPatch = Depends(get_current_admin)):
     print('hi get_all_f_users')
 
     users = await get_all_users()
@@ -96,13 +96,30 @@ async def edit_user(request: Request, username: str):
 
 
 @router.get('/add_user')
-async def add_user(request: Request):
+async def add_user(request: Request, current_user: UserPatch = Depends(get_current_admin)):
     print('add_user')
     context = {
         'request': request,
     }
     return templates.TemplateResponse('user/add_user.html', context=context)
 
+
+@router.get('/get_users/form')
+async def get_users_form(current_user: UserPatch = Depends(get_current_admin)):
+    users = await get_all_users()
+    converted_users = [convert_record_to_user_get(record) for record in users]
+    context = {
+        'user': converted_users,
+    }
+    return context
+
+
+def convert_record_to_user_get(record):
+    return UserForm(
+        id=record.get('id'),
+        name=record.get('name'),
+        surname=record.get('surname'),
+    )
 # <div class="container mt-5">
 #     <h1>User List</h1>
 #     <table class="table">
