@@ -14,6 +14,7 @@ from src.handlers.flight_routes import router as flight_routes
 from src.handlers.ticket_routes import router as ticket_router
 from src.handlers.login_routes import router as login_routes
 from src.handlers.welcome import router as welcome_routes
+from src.handlers.handlers_analytics_queries.flight_popularity_routes import router as analytics_routes
 
 import pdb
 
@@ -29,6 +30,7 @@ app.include_router(flight_routes, prefix='/flight', tags=['Flights'])
 app.include_router(ticket_router, prefix='/ticket', tags=['Tickets'])
 app.include_router(login_routes, prefix='/login', tags=['Login'])
 app.include_router(welcome_routes, prefix='/welcome', tags=['Welcome'])
+app.include_router(analytics_routes, prefix='/analytics', tags=['Analytics'])
 
 app.mount("/welcome/assets", StaticFiles(directory="static"), name="static")
 app.mount("/static", StaticFiles(directory="static"), name="static")

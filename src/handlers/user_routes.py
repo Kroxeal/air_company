@@ -98,6 +98,7 @@ async def edit_user(request: Request, username: str):
 @router.get('/add_user')
 async def add_user(request: Request, current_user: UserPatch = Depends(get_current_admin)):
     print('add_user')
+    print(request.headers)
     context = {
         'request': request,
     }

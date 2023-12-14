@@ -67,10 +67,53 @@
                 });
             }
         }
-        function addUser(){
-            window.location.href = `/user/add_user`;
+        function getCookie(name) {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.startsWith(name + '=')) {
+                return cookie.substring(name.length + 1);
+            }
         }
+        return null;
+    }
+        async function addUser(){
+
+            let token = getCookie('access_token');
+
+            let headers = new Headers();
+            headers.append('Authorization', 'Bearer ' + token);
+
+            console.log('Token:', token);
+            console.log('Headers:', headers);
+
+            try {
+                console.log(token);
+                let response = await fetch(`/user/add_user`, {
+                    method: 'GET',
+                    headers: {
+                         'Content-Type': 'application/json',
+                         'Authorization': `Bearer ${token}`,
+                },
+                });
+
+                if (response.ok) {
+                    window.location.href = `/user/add_user`;
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+
+            }
     </script>
+
+<script>
+
+
+
+</script>
 
 </body>
 </html>

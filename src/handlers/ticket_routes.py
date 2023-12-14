@@ -1,10 +1,15 @@
+import datetime
+
 from fastapi import APIRouter, Request
 from pydantic import UUID4
 from starlette.templating import Jinja2Templates
 
 from src.db.models import Ticket, TicketDetails, PatchTicket, TicketAll, TicketCreate, TicketPatch
+from src.services.CRUD.Flights_crud import select_price
 from src.services.CRUD.Tickets_crud import create_ticket_raw, get_ticket_raw, get_ticket_details_raw, update_ticket_raw, \
     delete_ticket_raw, get_all_tickets, update_ticket_form_raw
+from src.services.logic import logic_ticket
+
 
 router = APIRouter()
 templates = Jinja2Templates(directory='templates')
@@ -12,6 +17,10 @@ templates = Jinja2Templates(directory='templates')
 
 @router.post('/add')
 async def create_ticket(ticket: TicketCreate):
+    ticket.booking_date = datetime.datetime.now()
+    price = await select_price(ticket.flight)
+    price = price.get('ticket_price')
+    ticket.price = logic_ticket.add_sum_by_status(ticket.service_class, price)
     ticket = await create_ticket_raw(ticket)
     context = {
         'ticket': ticket

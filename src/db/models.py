@@ -21,7 +21,16 @@ class PostUser(BaseModel):
     phone_number: str
     email: str
     password: str
-    role: str
+    role: str = None
+
+
+class UserRegistration(BaseModel):
+    username: str
+    name: str
+    surname: str
+    phone_number: str
+    email: str
+    password: str
 
 
 class BasePassport(BaseModel):
@@ -161,12 +170,13 @@ class TicketAll(BaseModel):
 
 
 class TicketCreate(BaseModel):
+    id: UUID4 = None
     flight: UUID4
     user: UUID4
     service_class: str
-    price: str
+    price: float = None
     status: str
-    booking_date: datetime.datetime
+    booking_date: datetime.datetime = None
 
 
 class PatchTicket(BaseModel):
@@ -204,6 +214,7 @@ class CreatePassport(BaseModel):
             print({**json.loads(value)})
             return cls(**json.loads(value))
         return value
+
 
 class User(BaseUser):
     username: str

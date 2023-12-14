@@ -21,30 +21,13 @@
             <li class="nav-item">
                 <a class="nav-link" href="#" onclick="goToPage('{{ url_for('get_aircrafts/all') }}')">Aircrafts</a>
             </li>
-            <li class="nav-item" id="flightsNav">
+            <li class="nav-item">
                 <a class="nav-link" href="#" onclick="goToPage('{{ url_for('get_flights/all') }}')">Flights</a>
             </li>
-            <li class="nav-item" id="ticketsNav">
+            <li class="nav-item">
                 <a class="nav-link" href="#" onclick="goToPage('{{ url_for('get_tickets/all') }}')">Tickets</a>
             </li>
-            <li class="nav-item" id="analyticsNav">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="analyticsDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Analytics
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="analyticsDropdown">
-                        <a class="dropdown-item" href="#" onclick="goToPage('{{ url_for('popularity_routes') }}')">Flight Population</a>
-                    </div>
-                </div>
-            </li>
-            <li class="nav-item" id="registrationIcon">
-                <a class="nav-link" href="#" onclick="goToRegistration()">
-                    <i class="fas fa-user-plus"></i> Register
-                </a>
-            </li>
         </ul>
-
         <form id="logoutForm" class="ml-auto" action="/auth/logout" method="post">
             <button type="submit" class="btn btn-outline-danger">Logout</button>
         </form>
@@ -54,13 +37,9 @@
     </div>
 </nav>
 
-<script
-  src="https://code.jquery.com/jquery-3.7.1.min.js"
-  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-  crossorigin="anonymous"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-9xQiVOujr4CpTJ15fEo+BNgL/ptcPZl4Uftc1aXtYJo=" crossorigin="anonymous"></script>
+
 <script>
         let isAuthenticated = getCookie('access_token') !== null;
         let userRole = getUserRole();
@@ -78,28 +57,31 @@
             return null;
         }
 
-        window.onload = function () {
-            updateNavbarVisibility();
-        };
+        function toggleNavigationItems() {
+            const itemRoles = {
+                'Users': ['admin'],
+                'Departments': ['admin'],
+                'Employees': ['admin'],
+                'Passports': ['admin'],
+                'Aircrafts': ['admin'],
+                'Flights': ['admin'],
+                'Tickets': ['admin', 'user'],
+            };
 
-        function updateNavbarVisibility() {
-            let isAdmin = userRole === 'admin';
-            let isAuthenticated = getCookie('access_token') !== null;
-
-            document.getElementById('loginForm').style.display = isAuthenticated ? 'none' : 'block';
-            document.getElementById('logoutForm').style.display = isAuthenticated ? 'block' : 'none';
-            document.getElementById('registrationIcon').style.display = isAuthenticated ? 'none' : 'block';
-
-            // Show or hide specific navigation items based on user role
-            let navItems = document.querySelectorAll('.navbar-nav .nav-item');
-            navItems.forEach(item => {
-                if (isAdmin || item.id === 'flightsNav' || item.id === 'ticketsNav' || item.id === 'registrationIcon') {
-                    item.style.display = 'block';
+            Object.keys(itemRoles).forEach(item => {
+                let navItem = document.querySelector(`a[href*="${item.toLowerCase()}"]`).parentNode;
+                if (itemRoles[item].includes(userRole)) {
+                    navItem.style.display = 'block';
                 } else {
-                    item.style.display = 'none';
+                    navItem.style.display = 'none';
                 }
             });
         }
+
+        // Call the function to toggle navigation items visibility when the page has fully loaded
+        window.addEventListener('load', function () {
+            toggleNavigationItems();
+        });
 
         // Function to handle logout
         const logout = async () => {
@@ -112,12 +94,16 @@
                     },
                 });
                 alert('Вы успешно вышли из системы');
-                window.location.href = '/welcome/hi';
+                // Redirect to login page or perform other actions after logout
+                // window.location.href = '/auth/i';
             } catch (error) {
                 console.error('Logout error:', error);
                 alert('Failed to log out');
             }
         };
+
+        document.getElementById('loginForm').style.display = isAuthenticated ? 'none' : 'block';
+        document.getElementById('logoutForm').style.display = isAuthenticated ? 'block' : 'none';
 
         document.getElementById('logoutForm').addEventListener('submit', async function (event) {
             event.preventDefault();
@@ -128,10 +114,6 @@
             event.preventDefault();
             window.location.href = '/auth/i';
         });
-
-        function goToRegistration() {
-            window.location.href = '/auth/registration';
-        }
 
         async function goToPage(url) {
             let token = getCookie('access_token');

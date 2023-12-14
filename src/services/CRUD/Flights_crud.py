@@ -155,3 +155,18 @@ async def get_all_flight_form():
         }
         flight_lst.append(FlightModel(**flight_dict))
     return flight_lst
+
+
+@db_connection
+async def select_price(flight_id: str):
+
+    query = '''
+    SELECT ticket_price FROM flights
+    WHERE id = $1
+    '''
+    values = (
+        flight_id,
+    )
+    result = await database.fetchrow(query, *values)
+    print(result)
+    return result

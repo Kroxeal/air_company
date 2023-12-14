@@ -30,16 +30,8 @@
                 <input type="text" class="form-control" id="service_class" name="service_class" required>
         </div>
         <div class="mb-3">
-            <label for="price" class="form-label">Price</label>
-            <input type="text" class="form-control" id="price" name="price" required>
-        </div>
-        <div class="mb-3">
                 <label for="status" class="form-label">Status</label>
                 <input type="text" class="form-control" id="status" name="status" required>
-        </div>
-        <div class="mb-3">
-                <label for="booking_date" class="form-label">Booking Date</label>
-                <input type="datetime-local" class="form-control" id="booking_date" name="booking_date" required>
         </div>
         <button type="button" class="btn btn-success" onclick="addTicket()">Add Ticket</button>
     </form>
@@ -100,9 +92,7 @@
             flight: ticketData.get('flight'),
             user: ticketData.get('user'),
             service_class: ticketData.get('service_class'),
-            price: ticketData.get('price'),
             status: ticketData.get('status'),
-            booking_date: ticketData.get('booking_date'),
         };
 
         console.log(ticket);

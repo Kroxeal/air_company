@@ -195,3 +195,5 @@ async def update_ticket_form_raw(id: str, ticket: TicketPatch):
     )
     await database.execute(query, *values)
     return ticket
+
+
