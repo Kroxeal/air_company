@@ -1,13 +1,14 @@
 import datetime
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from pydantic import UUID4
 from starlette.templating import Jinja2Templates
 
-from src.db.models import Ticket, TicketDetails, PatchTicket, TicketAll, TicketCreate, TicketPatch
+from src.db.models import Ticket, TicketDetails, PatchTicket, TicketAll, TicketCreate, TicketPatch, UserPatch
 from src.services.CRUD.Flights_crud import select_price
 from src.services.CRUD.Tickets_crud import create_ticket_raw, get_ticket_raw, get_ticket_details_raw, update_ticket_raw, \
-    delete_ticket_raw, get_all_tickets, update_ticket_form_raw
+    delete_ticket_raw, get_all_tickets, update_ticket_form_raw, create_ticket_users
+from src.services.auth.auth import get_current_userr, get_current_user
 from src.services.logic import logic_ticket
 
 
@@ -22,6 +23,30 @@ async def create_ticket(ticket: TicketCreate):
     price = price.get('ticket_price')
     ticket.price = logic_ticket.add_sum_by_status(ticket.service_class, price)
     ticket = await create_ticket_raw(ticket)
+    context = {
+        'ticket': ticket
+    }
+    return context
+
+
+@router.post('/order_ticket')
+async def order_ticket(
+        ticket: TicketPatch,
+        current_user: UserPatch = Depends(get_current_user)
+):
+    print(ticket)
+    print(current_user.get('sub'))
+
+    ticket.user = current_user.get('sub')
+
+    ticket.booking_date = datetime.datetime.now()
+
+    price = await select_price(ticket.flight)
+    price = price.get('ticket_price')
+    ticket.price = logic_ticket.add_sum_by_status(ticket.service_class, price)
+    ticket.status = 'paid'
+    print(ticket)
+    ticket = await create_ticket_users(ticket)
     context = {
         'ticket': ticket
     }

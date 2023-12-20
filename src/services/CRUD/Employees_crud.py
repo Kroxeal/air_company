@@ -19,8 +19,8 @@ async def create_employee(employee: CreateEmployee):
         $1,
         $2,
         $3,
-        (SELECT id FROM departments WHERE name = $4),
-        (SELECT id FROM users WHERE username = $5)
+        $4,
+        $5
     )
     """
     values = (
@@ -28,7 +28,7 @@ async def create_employee(employee: CreateEmployee):
         employee.salary,
         employee.status,
         employee.department,
-        employee.username,
+        employee.user,
     )
     result = await database.execute(query_params, *values)
     print(result)

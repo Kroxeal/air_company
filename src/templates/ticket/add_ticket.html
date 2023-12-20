@@ -27,11 +27,19 @@
         </div>
         <div class="mb-3">
                 <label for="service_class" class="form-label">Service Class</label>
-                <input type="text" class="form-control" id="service_class" name="service_class" required>
+                <select class="form-select" id="service_class" name="service_class" required>
+                    <option value="economy">Economy</option>
+                    <option value="business">Business</option>
+                    <option value="first_class">First Class</option>
+                </select>
         </div>
         <div class="mb-3">
                 <label for="status" class="form-label">Status</label>
-                <input type="text" class="form-control" id="status" name="status" required>
+                <select class="form-select" id="status" name="status" required>
+                    <option value="paid">Paid</option>
+                    <option value="pending">Pending</option>
+                    <option value="failed">Failed</option>
+                </select>
         </div>
         <button type="button" class="btn btn-success" onclick="addTicket()">Add Ticket</button>
     </form>
@@ -96,19 +104,29 @@
         };
 
         console.log(ticket);
-        $.ajax({
-            url: '/ticket/add',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(ticket),
-            success: function () {
-                alert('Ticket added successfully');
-                window.location.href = '/ticket/get_tickets/all';
-            },
-            error: function () {
-                alert('Failed to add ticket');
-            }
-        });
+
+        $.get('/flight/get_flights/' + ticket.flight, function (flightData) {
+        console.log(flightData);
+
+       if (flightData.hasOwnProperty('available_seats') && flightData.available_seats > 0) {
+            $.ajax({
+                url: '/ticket/add',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(ticket),
+                success: function () {
+                    alert('Ticket added successfully');
+                    window.location.href = '/ticket/get_tickets/all';
+                },
+                error: function () {
+                    alert('Failed to add ticket');
+                }
+            });
+        } else {
+            // Если нет доступных мест, выводим сообщение пользователю
+            alert('No available seats for this flight');
+        }
+    });
     }
 </script>
 

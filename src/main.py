@@ -15,6 +15,9 @@ from src.handlers.ticket_routes import router as ticket_router
 from src.handlers.login_routes import router as login_routes
 from src.handlers.welcome import router as welcome_routes
 from src.handlers.handlers_analytics_queries.flight_popularity_routes import router as analytics_routes
+from src.handlers.cart_routes import router as cart_routes
+from src.handlers.handlers_statistics.flight_statistic_routes import router as statistics_routes
+
 
 import pdb
 
@@ -31,6 +34,8 @@ app.include_router(ticket_router, prefix='/ticket', tags=['Tickets'])
 app.include_router(login_routes, prefix='/login', tags=['Login'])
 app.include_router(welcome_routes, prefix='/welcome', tags=['Welcome'])
 app.include_router(analytics_routes, prefix='/analytics', tags=['Analytics'])
+app.include_router(cart_routes, prefix='/cart', tags=['Cart'])
+app.include_router(statistics_routes, prefix='/statistics', tags=['Statistics'])
 
 app.mount("/welcome/assets", StaticFiles(directory="static"), name="static")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -39,7 +44,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 origins = [
     "http://localhost",
     "http://localhost:8000",
-    "http://localhost:3000",  # Если ваш фронтэнд развернут на другом домене
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
@@ -53,14 +58,7 @@ app.add_middleware(
 
 @app.get("/secure-data")
 async def get_secure_data(current_user: User = Depends(get_current_user)):
-    # В этом роуте, только аутентифицированные пользователи могут получить доступ
     return {"message": "This is secure data"}
-
-
-# @app.get("/protected")
-# async def protected_route(token: str = Depends(oauth2_scheme)):
-#     payload = decode_access_token(token)
-#     return {"message": "Защищенный маршрут", "username": payload.get("username")}
 
 
 if __name__ == '__main__':

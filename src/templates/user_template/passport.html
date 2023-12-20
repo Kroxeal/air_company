@@ -14,12 +14,7 @@
 
 <div class="container mt-5">
     <h1>Add Passport</h1>
-    <form id="addPassportForm" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="user" class="form-label">User</label>
-            <select class="form-select" id="user" name="user" required>
-            </select>
-        </div>
+    <form id="addPassportForm" enctype="multipart/form-data" method="post">
         <div class="mb-3">
             <label for="passport_number" class="form-label">Passport Number</label>
             <input type="text" class="form-control" id="passport_number" name="passport_number" required>
@@ -68,7 +63,7 @@
         const formData = new FormData();
 
         const passport = {
-            user: passportData.get('user'),
+            user: '',
             passport_number: passportData.get('passport_number'),
             nationality: passportData.get('nationality'),
             sex: passportData.get('sex'),
@@ -85,7 +80,7 @@
         formData.append('uploaded_file', imageFile);
 
         $.ajax({
-            url: '/passport/post/pas',
+            url: '/passport/user_post/add_passport',
             type: 'POST',
             data: formData,
             processData: false,
@@ -93,7 +88,7 @@
             success: function (response) {
                 alert('Паспорт успешно добавлен');
                 console.log(response);
-                window.location.href = '/passport/get_passports/all';
+                window.location.href = '/welcome/hi';
             },
             error: function (xhr, status, error) {
                 if (xhr.responseJSON && xhr.responseJSON.detail) {
@@ -112,26 +107,6 @@
         });
     }
 
-    $(document).ready(function () {
-        loadUserModels();
-
-        function loadUserModels() {
-            $.get('/user/get_users/form', function (data) {
-                console.log(data);
-
-                if (data.hasOwnProperty('user') && Array.isArray(data.user)) {
-                    data.user.forEach(function (model) {
-                        $('#user').append($('<option>', {
-                            value: model.id,
-                            text: model.name + ' ' + model.surname
-                        }));
-                    });
-                } else {
-                    console.error('Invalid response format:', data);
-                }
-            });
-        }
-    });
 </script>
 
 </body>

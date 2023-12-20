@@ -39,6 +39,39 @@ async def create_ticket_raw(ticket: TicketCreate):
 
 
 @db_connection
+async def create_ticket_users(ticket: TicketPatch):
+    query = '''
+    INSERT INTO 
+    tickets(
+    flight_id,
+    user_id,
+    service_class,
+    price,
+    status,
+    booking_date
+    )
+    VALUES (
+        $1,
+        (SELECT id FROM users WHERE username = $2),
+        $3,
+        $4,
+        $5,
+        $6   
+    )
+    '''
+    values = (
+        ticket.flight,
+        ticket.user,
+        ticket.service_class,
+        ticket.price,
+        ticket.status,
+        ticket.booking_date,
+    )
+    await database.execute(query, *values)
+    return ticket
+
+
+@db_connection
 async def get_ticket_raw(username: str, flight_number: str):
     query = '''
     SELECT * FROM 

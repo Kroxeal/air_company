@@ -3,9 +3,9 @@ from datetime import date
 from fastapi import APIRouter, Depends, Request, UploadFile, File, Form, Body
 from starlette.templating import Jinja2Templates
 
-from src.db.models import CreatePassport, BasePassport, User, PassportUsername
+from src.db.models import CreatePassport, BasePassport, User, PassportUsername, PassportForUser
 from src.services.CRUD.Passports_crud import create_passport, get_passport, get_passport_by_id, update_passport, \
-    update_current_passport_partially, delete_passport_f, get_all_passports_f
+    update_current_passport_partially, delete_passport_f, get_all_passports_f, create_passport_user
 from src.services.CRUD.Users_crud import get_user_with_id
 from src.services.auth.auth import get_current_user
 from src.services.image_service import save_file
@@ -109,6 +109,27 @@ async def delete_passport(passport_number: str):
     return await delete_passport_f(passport_number)
 
 
+@router.post("/user_post/add_passport")
+async def create_passport_for_user(
+        passport: PassportForUser,
+        uploaded_file: UploadFile = File(...),
+        current_user: User = Depends(get_current_user),
+):
+    print('hell')
+    username = current_user.get('sub')
+    passport.user = username
+    route_photo = await save_file(uploaded_file)
+    created_passport = await create_passport_user(passport, route_photo.get('filename'))
+    print(created_passport)
+
+    context = {
+        'passport': created_passport,
+        'filename': uploaded_file.filename,
+    }
+
+    return context
+
+
 @router.get('/get_passports/all', name='get_passports/all')
 async def get_all_passport(request: Request):
     result = await get_all_passports_f()
@@ -137,3 +158,12 @@ async def edit_department(request: Request, passport_number: str):
     }
     print(context)
     return templates.TemplateResponse('passport/update_passport.html', context=context)
+
+
+@router.get('/add_form/user', name='url_add_passport_form')
+async def add_passport_form_user(request: Request):
+    context = {
+        'request': request,
+    }
+    print(context)
+    return templates.TemplateResponse('user_template/passport.html', context=context)

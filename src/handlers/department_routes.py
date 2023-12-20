@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
 
-from src.db.models import BaseDepartment, Department
+from src.db.models import BaseDepartment, Department, DepartmentForm
 from src.services.CRUD.Departments_crud import create_department, read_department, change_department, \
     change_department_partially, delete_department_f, get_all_departments_f
 
@@ -60,6 +60,25 @@ def convert_record_to_department_patch(record):
         name=record.get('name'),
         description=record.get('description'),
     )
+
+
+def convert_record_to_department_get(record):
+    return DepartmentForm(
+        id=record.get('id'),
+        name=record.get('name'),
+        description=record.get('description'),
+    )
+
+
+@router.get('/get_departments/form')
+async def get_departments_form():
+    departments = await get_all_departments_f()
+    result = [convert_record_to_department_get(department) for department in departments]
+    context = {
+        'department': result,
+
+    }
+    return context
 
 
 @router.get('/edit_form/{department_name}')

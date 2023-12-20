@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 
-from src.db.models import User, UserResponse, BaseUser, UserPatch, UserID, PostUser
+from src.db.models import User, UserResponse, BaseUser, UserPatch, UserID, PostUser, UserAll, PassportUser
 from src.db.settings import database
 from src.services.password_hash import HashingPassword
 from src.services.decorators.connect_decorator import db_connection
@@ -131,3 +131,28 @@ async def get_all_users():
     except Exception as e:
         print(f"Error executing SQL query: {e}")
         return []
+
+
+@db_connection
+async def get_user_passport_raw(username: str):
+    """
+    :param username:
+    :return: al data about current user except id nad password
+    and all data about passport
+    """
+    query = '''
+    SELECT 
+        users.*,
+        passports.*
+    FROM users
+    INNER JOIN passports ON users.id = passports.user_id
+    WHERE users.username = $1
+    '''
+    result = await database.fetchrow(query, username)
+    result = dict(result)
+
+    photo_filename = result['photo']
+    photo_route = f"/static/images/{photo_filename}"
+    result['photo'] = photo_route
+    return PassportUser(**result)
+

@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 
-from src.db.models import BasePassport, CreatePassport, PassportUsername
+from src.db.models import BasePassport, CreatePassport, PassportUsername, PassportForUser
 from src.db.settings import database
 from src.services.decorators.connect_decorator import db_connection
 
@@ -28,7 +28,7 @@ async def create_passport(passport: PassportUsername, filename):
         $5,
         $6,
         $7,
-        (SELECT id FROM users WHERE username = $8),
+        $8,
         $9
     )
     """
@@ -40,7 +40,7 @@ async def create_passport(passport: PassportUsername, filename):
         passport.date_of_birth,
         passport.date_of_issue,
         passport.date_of_expire,
-        passport.username,
+        passport.user,
         filename
     )
 
@@ -171,3 +171,47 @@ async def get_all_passports_f():
         passports_data_list.append(CreatePassport(**passport_data))
     print({'passport': passports_data_list})
     return passports_data_list
+
+
+@db_connection
+async def create_passport_user(passport: PassportForUser, filename):
+    print("crud")
+    insert_query = """
+    INSERT INTO Passports (
+    passport_number,
+    nationality,
+    sex,
+    address,
+    date_of_birth,
+    date_of_issue,
+    date_of_expire,
+    user_id,
+    photo
+    )
+    VALUES (
+        $1,
+        $2,
+        $3,
+        $4,
+        $5,
+        $6,
+        $7,
+        (select users.id from users where username = $8),
+        $9
+    )
+    """
+    values = (
+        passport.passport_number,
+        passport.nationality,
+        passport.sex,
+        passport.address,
+        passport.date_of_birth,
+        passport.date_of_issue,
+        passport.date_of_expire,
+        passport.user,
+        filename
+    )
+
+    await database.execute(insert_query, *values)
+
+    return passport

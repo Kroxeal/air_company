@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 
 from src.db.models import User, UserResponse, BaseUser, UserPatch, UserAll, PostUser, UserForm
 from src.services.CRUD.Users_crud import create_user, get_user, update_user, update_user_partially, delete_user_f, \
-    get_all_users
+    get_all_users, get_user_passport_raw
 from src.services.auth.auth import get_current_admin, get_current_user, get_current_userr
 
 router = APIRouter()
@@ -106,7 +106,7 @@ async def add_user(request: Request, current_user: UserPatch = Depends(get_curre
 
 
 @router.get('/get_users/form')
-async def get_users_form(current_user: UserPatch = Depends(get_current_admin)):
+async def get_users_form():
     users = await get_all_users()
     converted_users = [convert_record_to_user_get(record) for record in users]
     context = {
@@ -121,50 +121,18 @@ def convert_record_to_user_get(record):
         name=record.get('name'),
         surname=record.get('surname'),
     )
-# <div class="container mt-5">
-#     <h1>User List</h1>
-#     <table class="table">
-#         <thead>
-#             <tr>
-#                 <th>Name</th>
-#                 <th>Surname</th>
-#                 <th>Phone Number</th>
-#                 <th>Email</th>
-#                 <th>Role</th>
-#             </tr>
-#         </thead>
-#         <tbody id="userTableBody">
-#             {% for user in users %}
-#                 <tr>
-#                     <td>{{ user.name }}</td>
-#                     <td>{{ user.surname }}</td>
-#                     <td>{{ user.phone_number }}</td>
-#                     <td>{{ user.email }}</td>
-#                     <td>{{ user.role }}</td>
-#                 </tr>
-#             {% endfor %}
-#         </tbody>
-#     </table>
-# </div>
 
 
-   # <script>
-   #      async function getUsers() {
-   #          // Читаем токен из cookies
-   #          const token = document.cookie.replace(/(?:(?:^|.*;\s*)yourToken\s*=\s*([^;]*).*$)|^.*$/, "$1");
-   #
-   #          // Делаем запрос к бэкенду с токеном в заголовках
-   #          const response = await fetch('user/users_all/da', {
-   #              method: 'GET',
-   #              headers: {
-   #                  'Authorization': `Bearer ${token}`,
-   #                  'Content-Type': 'application/json'
-   #                  // Добавьте другие заголовки по необходимости
-   #              }
-   #          });
-   #
-   #          // Обрабатываем ответ по мере необходимости
-   #          const data = await response.json();
-   #          console.log(data);
-   #      }
-   #  </script>
+@router.get('/get/user_form/da', name='get_user_passport_form/ad')
+async def get_user(request: Request, current_user: UserPatch = Depends(get_current_user)):
+    username = current_user.get('sub')
+    print(username)
+    result = await get_user_passport_raw(username)
+    print(result)
+
+    context = {
+        'request': request,
+        'user_passport': result,
+    }
+    return templates.TemplateResponse('personal_account/account.html', context=context)
+

@@ -10,13 +10,9 @@ templates = Jinja2Templates(directory='templates')
 
 @router.get('/popularity_routes', name='popularity_routes')
 async def get_popularity_routes(request: Request):
-    polpularity_flights = await population_of_flights()
-    print({'polpularity_flights': polpularity_flights})
-    fig = create_plot(polpularity_flights)
-    print({'fig': fig})
-    fig.show()
+    popularity_flights = await population_of_flights()
+    fig = create_plot(popularity_flights)
     graph_html = fig.to_html(full_html=False)
-    # print({'graph_html': graph_html})
     context = {
         'request': request,
         'graph': graph_html,

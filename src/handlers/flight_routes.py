@@ -1,19 +1,28 @@
 from fastapi import APIRouter, Request
 from starlette.templating import Jinja2Templates
 
-from src.db.models import Flight, PatchFlight
+from src.db.models import Flight, PatchFlight, SearchFlight
 from src.services.CRUD.Flights_crud import create_flight_raw, get_flight_raw, update_flight_partially_raw, \
-    delete_flight_raw, get_all_flight_raw, get_all_flight_form
+    delete_flight_raw, get_all_flight_raw, get_all_flight_form, get_flight_by_id, search_flight_raw
 
 router = APIRouter()
 templates = Jinja2Templates(directory='templates')
 
 
 @router.post('/add')
-async def create_flight(requset: Request, flight: Flight):
+async def create_flight(flight: Flight):
     result = await create_flight_raw(flight)
     context = {
         'flight': result,
+    }
+    return context
+
+
+@router.post('/search_date')
+async def search_date(flight: SearchFlight):
+    result = await search_flight_raw(flight)
+    context = {
+        'flights': result,
     }
     return context
 
@@ -62,8 +71,21 @@ async def get_edit_flight_form(request: Request, flight_number: str):
 
 @router.get('/get_flights_form/all')
 async def get_flights_form():
-    flights = await get_all_flight_form()
+    flights = await get_all_flight_raw()
     context = {
         'flight': flights,
     }
     return context
+
+
+@router.get('/get_flights/{id}')
+async def get_flights(id: str):
+    return await get_flight_by_id(id)
+
+
+@router.get('/search_form/data', name='search_form')
+async def search_flight(request: Request):
+    context = {
+        'request': request,
+    }
+    return templates.TemplateResponse('flight/search_flight.html', context=context)

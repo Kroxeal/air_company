@@ -16,16 +16,25 @@
     <h1>Add Employee</h1>
     <form id="addEmployeeForm">
         <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" required>
+            <label for="user" class="form-label">User</label>
+             <select class="form-select" id="user" name="user" required>
+             </select>
         </div>
         <div class="mb-3">
                 <label for="department" class="form-label">Department</label>
-                <input type="text" class="form-control" id="department" name="department" required>
+                <select class="form-select" id="department" name="department" required>
+                </select>
         </div>
         <div class="mb-3">
-            <label for="position" class="form-label">Position</label>
-            <input type="text" class="form-control" id="position" name="position" required>
+           <label for="position" class="form-label">Position</label>
+            <select class="form-select" id="position" name="position" required>
+                <option value="flight_attendant">Flight Attendant</option>
+                <option value="pilot">Pilot</option>
+                <option value="air_traffic_controller">Air Traffic Controller</option>
+                <option value="airport_security_officer">Airport Security Officer</option>
+                <option value="manager">Manager</option>
+                <option value="baggage_handler">Baggage Handler</option>
+            </select>
         </div>
         <div class="mb-3">
                 <label for="salary" class="form-label">Salary</label>
@@ -33,7 +42,18 @@
         </div>
         <div class="mb-3">
                 <label for="status" class="form-label">Status</label>
-                <input type="text" class="form-control" id="status" name="status" required>
+            <select class="form-select" id="status" name="status" required>
+                <option value="active">Active</option>
+                <option value="on_leave">On Leave</option>
+                <option value="training">Training</option>
+                <option value="suspended">Suspended</option>
+                <option value="resigned">Resigned</option>
+                <option value="retired">Retired</option>
+                <option value="on_duty">On Duty</option>
+                <option value="on_call">On Call</option>
+                <option value="sick_leave">Sick Leave</option>
+                <option value="remote_work">Remote Work</option>
+            </select>
         </div>
         <button type="button" class="btn btn-success" onclick="addEmployee()">Add Employee</button>
     </form>
@@ -42,7 +62,7 @@
 <script>
     function addEmployee() {
         const formData = {
-            username: $('#username').val(),
+            user: $('#user').val(),
             department: $('#department').val(),
             position: $('#position').val(),
             salary: $('#salary').val(),
@@ -56,13 +76,53 @@
             data: JSON.stringify(formData),
             success: function () {
                 alert('Employee added successfully');
-                window.location.href = '/employee/employees_all/da';
+                window.location.href = '/employee/employees_all';
             },
             error: function () {
                 alert('Failed to add employee');
             }
         });
     }
+    $(document).ready(function () {
+        loadUserModels();
+        loadDepartmentsModels();
+
+        function loadUserModels() {
+            $.get('/user/get_users/form', function (data) {
+                console.log(data);
+
+                if (data.hasOwnProperty('user') && Array.isArray(data.user)) {
+                    data.user.forEach(function (model) {
+                        console.log(model.id);
+                        console.log(model.name);
+                        console.log(model.surname);
+                        $('#user').append($('<option>', {
+                            value: model.id,
+                            text: model.name + ' ' + model.surname
+                        }));
+                    });
+                } else {
+                    console.error('Invalid response format:', data);
+                }
+            });
+        }
+        function loadDepartmentsModels() {
+            $.get('/department/get_departments/form', function (data) {
+                console.log(data);
+
+                if (data.hasOwnProperty('department') && Array.isArray(data.department)) {
+                    data.department.forEach(function (model) {
+                        $('#department').append($('<option>', {
+                            value: model.id,
+                            text: model.name
+                        }));
+                    });
+                } else {
+                    console.error('Invalid response format:', data);
+                }
+            });
+        }
+    });
 </script>
 
 </body>

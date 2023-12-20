@@ -42,10 +42,17 @@
     });
 
     function saveChanges() {
-        const formData = {
-            name: $('#name').val(),
-            description: $('#description').val(),
-        };
+        const formData = {};
+
+    const name = $('#name').val().trim();
+    if (name !== '') {
+        formData.name = name;
+    }
+
+    const description = $('#description').val().trim();
+    if (description !== '') {
+        formData.description = description;
+    }
         console.log(formData);
         $.ajax({
             url: `/department/update/${name}`,

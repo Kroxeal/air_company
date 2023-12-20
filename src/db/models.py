@@ -6,6 +6,10 @@ from pydantic import BaseModel, UUID4, Field, model_validator
 from datetime import date, timezone
 import json
 
+from typing_extensions import Optional
+
+from src.db.Enums import StatusUserRole, StatusEmployeePosition, EmployeeStatus, PassportSex
+
 
 class BaseUser(BaseModel):
     name: str
@@ -21,7 +25,7 @@ class PostUser(BaseModel):
     phone_number: str
     email: str
     password: str
-    role: str = None
+    role: StatusUserRole
 
 
 class UserRegistration(BaseModel):
@@ -52,8 +56,8 @@ class BaseEmployee(BaseModel):
 
 
 class CreateEmployee(BaseModel):
-    username: str
-    department: str
+    user: UUID4
+    department: UUID4
     position: str
     salary: decimal.Decimal
     status: str
@@ -125,6 +129,7 @@ class PatchFlight(BaseModel):
 
 
 class FlightAll(BaseModel):
+    id: UUID4 = None
     flight_number: str
     departure_datetime: datetime.datetime
     arrival_datetime: datetime.datetime
@@ -133,6 +138,10 @@ class FlightAll(BaseModel):
     available_seats: int
     ticket_price: float
     aircraft: str
+
+
+class FlightStatistics(FlightAll):
+    registration_number: str
 
 
 class FlightModel(BaseModel):
@@ -169,6 +178,11 @@ class TicketAll(BaseModel):
     booking_date: datetime.datetime
 
 
+class TicketsCart(TicketAll):
+    departure_datetime: datetime.datetime
+    arrival_datetime: datetime.datetime
+
+
 class TicketCreate(BaseModel):
     id: UUID4 = None
     flight: UUID4
@@ -182,6 +196,15 @@ class TicketCreate(BaseModel):
 class PatchTicket(BaseModel):
     flight_number: str = None
     service_class: str = None
+    price: float = None
+    status: str = None
+    booking_date: datetime.datetime = None
+
+
+class CartTicket(BaseModel):
+    id: UUID4 = None
+    flight: str
+    service_class: str
     price: float = None
     status: str = None
     booking_date: datetime.datetime = None
@@ -258,6 +281,12 @@ class BaseDepartment(BaseModel):
     description: str
 
 
+class DepartmentForm(BaseModel):
+    id: UUID4
+    name: str
+    description: str
+
+
 class Department(BaseDepartment):
     name: str = None
     description: str = None
@@ -290,10 +319,10 @@ class EmployeeUsers(BaseModel):
 
 
 class PassportUsername(BaseModel):
-    username: str
+    user: UUID4
     passport_number: str
     nationality: str
-    sex: str
+    sex: PassportSex
     address: str
     date_of_birth: date
     date_of_issue: date
@@ -307,3 +336,36 @@ class PassportUsername(BaseModel):
             print({**json.loads(value)})
             return cls(**json.loads(value))
         return value
+
+
+class PassportForUser(BaseModel):
+    user: str = None
+    passport_number: str
+    nationality: str
+    sex: PassportSex
+    address: str
+    date_of_birth: date
+    date_of_issue: date
+    date_of_expire: date
+
+    @model_validator(mode='before')
+    @classmethod
+    def validate_to_json(cls, value):
+        if isinstance(value, str):
+            print('dec')
+            print({**json.loads(value)})
+            return cls(**json.loads(value))
+        return value
+
+
+class PassportUser(UserAll, BasePassport):
+    photo: str
+
+
+class SearchFlight(BaseModel):
+    departure_airport: str = None
+    arrival_airport: str = None
+    arrival_datetime: datetime.datetime = None
+    departure_datetime: datetime.datetime = None
+
+

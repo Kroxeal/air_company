@@ -82,18 +82,70 @@
     });
 
     function saveChanges() {
-        const formData = {
-            name: $('#name').val(),
-            model: $('#model').val(),
-            year_manufacture: $('#year_manufacture').val(),
-            seating_capacity: $('#seating_capacity').val(),
-            max_range: $('#max_range').val(),
-            engine_type: $('#engine_type').val(),
-            status: $('#status').val(),
-            last_service: $('#last_service').val(),
-            manufacture: $('#manufacture').val(),
-            registration_number: $('#registration_number').val(),
-        };
+        // const formData = {
+        //     name: $('#name').val(),
+        //     model: $('#model').val(),
+        //     year_manufacture: $('#year_manufacture').val(),
+        //     seating_capacity: $('#seating_capacity').val(),
+        //     max_range: $('#max_range').val(),
+        //     engine_type: $('#engine_type').val(),
+        //     status: $('#status').val(),
+        //     last_service: $('#last_service').val(),
+        //     manufacture: $('#manufacture').val(),
+        //     registration_number: $('#registration_number').val(),
+        // };
+        const formData = {}
+
+        const name = $('#name').val().trim();
+        if (name !== '') {
+            formData.name = name;
+        }
+
+        const model = $('#model').val().trim();
+        if (model !== '') {
+            formData.model = model;
+        }
+
+        const yearManufacture = $('#year_manufacture').val().trim();
+        if (yearManufacture !== '') {
+            formData.year_manufacture = yearManufacture;
+        }
+
+        const seatingCapacity = $('#seating_capacity').val().trim();
+        if (seatingCapacity !== '') {
+            formData.seating_capacity = seatingCapacity;
+        }
+
+        const maxRange = $('#max_range').val().trim();
+        if (maxRange !== '') {
+            formData.max_range = maxRange;
+        }
+
+        const engineType = $('#engine_type').val().trim();
+        if (engineType !== '') {
+            formData.engine_type = engineType;
+        }
+
+        const status = $('#status').val().trim();
+        if (status !== '') {
+            formData.status = status;
+        }
+
+        const lastService = $('#last_service').val().trim();
+        if (lastService !== '') {
+            formData.last_service = lastService;
+        }
+
+        const manufacture = $('#manufacture').val().trim();
+        if (manufacture !== '') {
+            formData.manufacture = manufacture;
+        }
+
+        const registrationNumber = $('#registration_number').val().trim();
+        if (registrationNumber !== '') {
+            formData.registration_number = registrationNumber;
+        }
+
         console.log(formData);
         $.ajax({
             url: `/aircraft/update/${registration_number}`,

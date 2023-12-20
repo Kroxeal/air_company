@@ -57,13 +57,32 @@
     });
 
     function saveChanges() {
-        const formData = {
-            name: $('#name').val(),
-            surname: $('#surname').val(),
-            phone_number: $('#phone_number').val(),
-            email: $('#email').val(),
-            role: $('#role').val(),
-        };
+        const formData = {};
+
+    const name = $('#name').val().trim();
+    if (name !== '') {
+        formData.name = name;
+    }
+
+    const surname = $('#surname').val().trim();
+    if (surname !== '') {
+        formData.surname = surname;
+    }
+
+    const phoneNumber = $('#phone_number').val().trim();
+    if (phoneNumber !== '') {
+        formData.phone_number = phoneNumber;
+    }
+
+    const email = $('#email').val().trim();
+    if (email !== '') {
+        formData.email = email;
+    }
+
+    const role = $('#role').val().trim();
+    if (role !== '') {
+        formData.role = role;
+    }
         console.log(formData);
         $.ajax({
             url: `/user/update/${username}`,
